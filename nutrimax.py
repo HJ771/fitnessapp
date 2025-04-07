@@ -41,39 +41,140 @@ def verificar_login(username, password):
     else:
         return {"status": "error", "message": "Usuario no existe"}
 
+def crear_pagina_inicial(username):
+    return ft.Container(
+        content=ft.Column(
+            [
+                ft.Text(f"¡Bienvenido, {username}!", size=28, color="#2E7D32", weight="bold"),
+                ft.Text("Selecciona una opción en la barra de navegación para continuar.", size=18, color="#262626"),
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        alignment=ft.alignment.center,
+        expand=True,
+        bgcolor="#F5F5F5",
+        border_radius=15,
+        padding=20,
+    )
+
+def crear_pagina_nutricion():
+    return ft.Container(
+        content=ft.Text("Página de Nutrición - Placeholder", size=24, color="#2E7D32", weight="bold"),
+        alignment=ft.alignment.center,
+        expand=True,
+        bgcolor="#F5F5F5",
+        border_radius=15,
+        padding=20,
+    )
+
+def crear_pagina_gimnasio():
+    return ft.Container(
+        content=ft.Text("Página de Gimnasio - Placeholder", size=24, color="#2E7D32", weight="bold"),
+        alignment=ft.alignment.center,
+        expand=True,
+        bgcolor="#F5F5F5",
+        border_radius=15,
+        padding=20,
+    )
+
+def mostrar_pagina_principal(page: ft.Page, username: str, user_id: int):
+    page.clean()
+    pagina_inicial = crear_pagina_inicial(username)
+    pagina_nutricion = crear_pagina_nutricion()
+    pagina_gimnasio = crear_pagina_gimnasio()
+    contenido_actual = ft.Container(content=pagina_inicial, expand=True)
+    
+    def cambiar_pagina(index):
+        if index == 0:
+            contenido_actual.content = pagina_nutricion
+        elif index == 1:
+            contenido_actual.content = pagina_gimnasio
+        page.update()
+    
+    def volver_pagina_inicial(e):
+        contenido_actual.content = pagina_inicial
+        page.update()
+    
+    appbar = ft.AppBar(
+        title=ft.Container(
+            content=ft.Column([
+                ft.TextButton(
+                    content=ft.Text("NutriMax", size=24, weight="bold", color="white"),
+                    on_click=volver_pagina_inicial,
+                    style=ft.ButtonStyle(color="white")
+                ),
+                ft.Row([
+                    ft.TextButton(
+                        content=ft.Column(
+                            [ft.Icon(ft.icons.RESTAURANT), ft.Text("Nutrición")],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            spacing=5
+                        ),
+                        on_click=lambda e: cambiar_pagina(0),
+                        style=ft.ButtonStyle(color="white")
+                    ),
+                    ft.TextButton(
+                        content=ft.Column(
+                            [ft.Icon(ft.icons.FITNESS_CENTER), ft.Text("Gimnasio")],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            spacing=5
+                        ),
+                        on_click=lambda e: cambiar_pagina(1),
+                        style=ft.ButtonStyle(color="white")
+                    )
+                ], alignment=ft.MainAxisAlignment.CENTER, spacing=30)
+            ], 
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+            ),
+            padding=ft.padding.only(top=10),
+        ),
+        bgcolor="#2E7D32",
+        toolbar_height=120,
+        center_title=True
+    )
+    
+    page.appbar = appbar
+    page.bgcolor = "#E0F2E9"
+    page.add(ft.Container(contenido_actual, expand=True))
+    page.update()
+
 def mostrar_pantalla_info_personal(page: ft.Page, username: str, user_id: int):
+    page.clean()
+    page.appbar = None
+    page.navigation_bar = None
     nombre_field = ft.TextField(label="Nombre completo", width=300, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
     altura_field = ft.TextField(label="Altura (pies)", width=300, keyboard_type=ft.KeyboardType.NUMBER, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
     peso_field = ft.TextField(label="Peso (lbs)", width=300, keyboard_type=ft.KeyboardType.NUMBER, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
     sexo_field = ft.Dropdown(label="Sexo", width=300, options=[ft.dropdown.Option("Masculino"), ft.dropdown.Option("Femenino"), ft.dropdown.Option("Otro")], text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
     edad_field = ft.TextField(label="Edad", width=300, keyboard_type=ft.KeyboardType.NUMBER, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
-
+    
     conn = conectar_db()
     cursor = conn.cursor()
     cursor.execute("SELECT nombre_completo, altura, peso, sexo, edad FROM informacion_personal WHERE user_id = ?", (user_id,))
     info = cursor.fetchone()
     conn.close()
-
+    
     if info:
         nombre_field.value = info[0]
         altura_field.value = str(info[1])
         peso_field.value = str(info[2])
         sexo_field.value = info[3]
         edad_field.value = str(info[4])
-
+    
     def guardar_info(e):
         nombre = nombre_field.value
         altura = altura_field.value
         peso = peso_field.value
         sexo = sexo_field.value
         edad = edad_field.value
-
+        
         if not all([nombre, altura, peso, sexo, edad]):
             page.snack_bar = ft.SnackBar(ft.Text("Completa todos los campos", size=16), bgcolor="#D32F2F", duration=3000)
             page.snack_bar.open = True
             page.update()
             return
-
+        
         try:
             altura = float(altura)
             peso = float(peso)
@@ -83,13 +184,13 @@ def mostrar_pantalla_info_personal(page: ft.Page, username: str, user_id: int):
             page.snack_bar.open = True
             page.update()
             return
-
+        
         try:
             conn = conectar_db()
             cursor = conn.cursor()
             cursor.execute("SELECT id FROM informacion_personal WHERE user_id = ?", (user_id,))
             existe = cursor.fetchone()
-
+            
             if existe:
                 cursor.execute("UPDATE informacion_personal SET nombre_completo = ?, altura = ?, peso = ?, sexo = ?, edad = ? WHERE user_id = ?", (nombre, altura, peso, sexo, edad, user_id))
             else:
@@ -102,26 +203,10 @@ def mostrar_pantalla_info_personal(page: ft.Page, username: str, user_id: int):
             return
         finally:
             conn.close()
-
+        
         page.clean()
-        exito_container = ft.Container(
-            content=ft.Column(
-                [
-                    ft.Text("Información guardada exitosamente", size=28, color="#2E7D32", weight="bold"),
-                    ft.ElevatedButton("Volver", on_click=lambda e: mostrar_pantalla_info_personal(page, username, user_id), bgcolor="#FFA000", color="white", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)), height=50)
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=20
-            ),
-            padding=20,
-            border_radius=15,
-            bgcolor="white",
-            width=400,
-            shadow=ft.BoxShadow(spread_radius=2, blur_radius=10, color=ft.colors.with_opacity(0.1, "black"), offset=ft.Offset(0, 4))
-        )
-        page.add(exito_container)
-        page.update()
-
+        mostrar_pagina_principal(page, username, user_id)
+    
     info_container = ft.Container(
         content=ft.Column(
             [
@@ -143,53 +228,61 @@ def mostrar_pantalla_info_personal(page: ft.Page, username: str, user_id: int):
         width=400,
         shadow=ft.BoxShadow(spread_radius=2, blur_radius=10, color=ft.colors.with_opacity(0.1, "black"), offset=ft.Offset(0, 4))
     )
+    
     page.add(info_container)
     page.update()
 
 def main(page: ft.Page):    
-
     page.title = "NutriMax - Login"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.bgcolor = "#f0f8ff"
-
+    
     username_field = ft.TextField(label="Usuario", width=300, border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", text_size=16, content_padding=10, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"))
     password_field = ft.TextField(label="Contraseña", width=300, border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", password=True, can_reveal_password=True, text_size=16, content_padding=10, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"))
     error_message = ft.Text("", size=16, color="#D32F2F")
-
+    
     def login_click(e):
         username = username_field.value
         password = password_field.value
-
+        
         if not username or not password:
             error_message.value = "Completa todos los campos"
             page.update()
             return
-
+        
         resultado = verificar_login(username, password)
+        
         if resultado["status"] == "success":
+            conn = conectar_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM informacion_personal WHERE user_id = ?", (resultado["user_id"],))
+            info = cursor.fetchone()
+            conn.close()
+            
             page.clean()
-            mostrar_pantalla_info_personal(page, username, resultado["user_id"])
+            
+            if info:
+                mostrar_pagina_principal(page, username, resultado["user_id"])
+            else:
+                mostrar_pantalla_info_personal(page, username, resultado["user_id"])
         else:
             error_message.value = resultado["message"]
             page.update()
-
+    
     def register_click(e):
         username = username_field.value
         password = password_field.value
-
+        
         if not username or not password:
             error_message.value = "Completa todos los campos"
             page.update()
             return
-
+        
         resultado = registrar_usuario(username, password)
-        if resultado["status"] == "success":
-            error_message.value = resultado["message"]
-        else:
-            error_message.value = resultado["message"]
+        error_message.value = resultado["message"]
         page.update()
-
+    
     main_container = ft.Container(
         content=ft.Column(
             [
@@ -216,6 +309,7 @@ def main(page: ft.Page):
         width=400,
         shadow=ft.BoxShadow(spread_radius=2, blur_radius=10, color=ft.colors.with_opacity(0.1, "black"), offset=ft.Offset(0, 4))
     )
+    
     page.add(main_container)
     page.update()
 
