@@ -41,14 +41,53 @@ def verificar_login(username, password):
     else:
         return {"status": "error", "message": "Usuario no existe"}
 
+def obtener_info_personal(user_id):
+    conn = conectar_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT nombre_completo, altura, peso, sexo, edad FROM informacion_personal WHERE user_id = ?", (user_id,))
+    info = cursor.fetchone()
+    conn.close()
+    if info:
+        return {
+            "nombre": info[0],
+            "altura": info[1],
+            "peso": info[2],
+            "sexo": info[3],
+            "edad": info[4]
+        }
+    else:
+        return None
+
 def crear_pagina_inicial(username):
     return ft.Container(
         content=ft.Column(
             [
                 ft.Text(f"¡Bienvenido, {username}!", size=28, color="#2E7D32", weight="bold"),
-                ft.Text("Selecciona una opción en la barra de navegación para continuar.", size=18, color="#262626"),
+                ft.Text("NutriMax - Tu compañero de nutrición y entrenamiento", size=22, color="#2E7D32", weight="bold"),
+                ft.Text(
+                    "NutriMax te ayuda a alcanzar tus objetivos de salud y fitness con planes personalizados de nutrición y rutinas de gimnasio adaptadas a tus necesidades.",
+                    size=18,
+                    color="#262626",
+                    text_align=ft.TextAlign.CENTER
+                ),
+                ft.Text("Beneficios de usar NutriMax:", size=20, color="#2E7D32", weight="bold"),
+                ft.ListView(
+                    controls=[
+                        ft.Text("- Planes de dieta personalizados basados en tu información.", size=16, color="#262626"),
+                        ft.Text("- Rutinas de ejercicio adaptadas a tu nivel y objetivos.", size=16, color="#262626"),
+                        ft.Text("- Seguimiento de progreso y ajustes en tiempo real.", size=16, color="#262626"),
+                    ],
+                    spacing=10
+                ),
+                ft.Text(
+                    "Explora las secciones de Nutrición y Gimnasio para comenzar tu viaje hacia una vida más saludable.",
+                    size=18,
+                    color="#262626",
+                    text_align=ft.TextAlign.CENTER
+                ),
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=20
         ),
         alignment=ft.alignment.center,
         expand=True,
@@ -57,9 +96,14 @@ def crear_pagina_inicial(username):
         padding=20,
     )
 
-def crear_pagina_nutricion():
+def crear_pagina_nutricion(user_id):
+    info = obtener_info_personal(user_id)
+    if info:
+        texto = "Basado en tu información personal, te recomendamos una dieta balanceada adaptada a tus necesidades."
+    else:
+        texto = "Por favor, completa tu información personal para recibir recomendaciones."
     return ft.Container(
-        content=ft.Text("Página de Nutrición - Placeholder", size=24, color="#2E7D32", weight="bold"),
+        content=ft.Text(texto, size=18, color="#262626"),
         alignment=ft.alignment.center,
         expand=True,
         bgcolor="#F5F5F5",
@@ -67,9 +111,14 @@ def crear_pagina_nutricion():
         padding=20,
     )
 
-def crear_pagina_gimnasio():
+def crear_pagina_gimnasio(user_id):
+    info = obtener_info_personal(user_id)
+    if info:
+        texto = "Basado en tu información personal, te recomendamos una rutina de ejercicios personalizada."
+    else:
+        texto = "Por favor, completa tu información personal para recibir recomendaciones."
     return ft.Container(
-        content=ft.Text("Página de Gimnasio - Placeholder", size=24, color="#2E7D32", weight="bold"),
+        content=ft.Text(texto, size=18, color="#262626"),
         alignment=ft.alignment.center,
         expand=True,
         bgcolor="#F5F5F5",
@@ -80,8 +129,8 @@ def crear_pagina_gimnasio():
 def mostrar_pagina_principal(page: ft.Page, username: str, user_id: int):
     page.clean()
     pagina_inicial = crear_pagina_inicial(username)
-    pagina_nutricion = crear_pagina_nutricion()
-    pagina_gimnasio = crear_pagina_gimnasio()
+    pagina_nutricion = crear_pagina_nutricion(user_id)
+    pagina_gimnasio = crear_pagina_gimnasio(user_id)
     contenido_actual = ft.Container(content=pagina_inicial, expand=True)
     
     def cambiar_pagina(index):
