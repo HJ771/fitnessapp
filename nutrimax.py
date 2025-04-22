@@ -62,38 +62,47 @@ def crear_pagina_inicial(username):
     return ft.Container(
         content=ft.Column(
             [
-                ft.Text(f"¡Bienvenido, {username}!", size=28, color="#2E7D32", weight="bold"),
-                ft.Text("NutriMax - Tu compañero de nutrición y entrenamiento", size=22, color="#2E7D32", weight="bold"),
+                ft.Text(f"¡Bienvenido, {username}!", size=40, color="#FFFFFF", weight="bold", text_align=ft.TextAlign.CENTER),
+                ft.Text("NutriMax - Tu aliado en salud y bienestar", size=28, color="#FFFFFF", weight="bold", text_align=ft.TextAlign.CENTER, font_family="Roboto"),
                 ft.Text(
-                    "NutriMax te ayuda a alcanzar tus objetivos de salud y fitness con planes personalizados de nutrición y rutinas de gimnasio adaptadas a tus necesidades.",
-                    size=18,
-                    color="#262626",
-                    text_align=ft.TextAlign.CENTER
+                    "Descubre planes personalizados de nutrición y entrenamiento diseñados para ti.",
+                    size=20,
+                    color="#E0F7FA",
+                    text_align=ft.TextAlign.CENTER,
+                    font_family="Roboto"
                 ),
-                ft.Text("Beneficios de usar NutriMax:", size=20, color="#2E7D32", weight="bold"),
+                ft.Text("¿Por qué elegir NutriMax?", size=26, color="#FFFFFF", weight="bold", text_align=ft.TextAlign.CENTER),
                 ft.ListView(
                     controls=[
-                        ft.Text("- Planes de dieta personalizados basados en tu información.", size=16, color="#262626"),
-                        ft.Text("- Rutinas de ejercicio adaptadas a tu nivel y objetivos.", size=16, color="#262626"),
-                        ft.Text("- Seguimiento de progreso y ajustes en tiempo real.", size=16, color="#262626"),
+                        ft.Row([ft.Icon(ft.icons.FAVORITE, color="#FFCA28"), ft.Text("- Dietas adaptadas a tus metas.", size=18, color="#E0F7FA")]),
+                        ft.Row([ft.Icon(ft.icons.FITNESS_CENTER, color="#FFCA28"), ft.Text("- Rutinas de ejercicio personalizadas.", size=18, color="#E0F7FA")]),
+                        ft.Row([ft.Icon(ft.icons.TRENDING_UP, color="#FFCA28"), ft.Text("- Monitoreo de tu progreso en tiempo real.", size=18, color="#E0F7FA")]),
                     ],
-                    spacing=10
+                    spacing=15
                 ),
-                ft.Text(
-                    "Explora las secciones de Nutrición y Gimnasio para comenzar tu viaje hacia una vida más saludable.",
-                    size=18,
-                    color="#262626",
-                    text_align=ft.TextAlign.CENTER
-                ),
+                ft.ElevatedButton(
+                    "Comienza tu viaje",
+                    bgcolor="#FFCA28",
+                    color="#1B5E20",
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                    height=50,
+                    width=200
+                )
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=20
+            spacing=25
         ),
         alignment=ft.alignment.center,
         expand=True,
-        bgcolor="#F5F5F5",
-        border_radius=15,
-        padding=20,
+        bgcolor="#1B5E20",
+        border_radius=20,
+        padding=40,
+        shadow=ft.BoxShadow(spread_radius=10, blur_radius=20, color=ft.colors.with_opacity(0.4, "black"), offset=ft.Offset(0, 8)),
+        gradient=ft.LinearGradient(
+            begin=ft.Alignment(-1, -1),
+            end=ft.Alignment(1, 1),
+            colors=["#1B5E20", "#2E7D32"]
+        )
     )
 
 def crear_pagina_nutricion(user_id):
@@ -126,11 +135,87 @@ def crear_pagina_gimnasio(user_id):
         padding=20,
     )
 
+def crear_pagina_perfil(page: ft.Page, user_id):
+    info = obtener_info_personal(user_id)
+    if info:
+        nombre_field = ft.TextField(label="Nombre completo", value=info["nombre"], width=300, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
+        altura_field = ft.TextField(label="Altura (pies)", value=str(info["altura"]), width=300, keyboard_type=ft.KeyboardType.NUMBER, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
+        peso_field = ft.TextField(label="Peso (lbs)", value=str(info["peso"]), width=300, keyboard_type=ft.KeyboardType.NUMBER, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
+        sexo_field = ft.Dropdown(label="Sexo", value=info["sexo"], options=[ft.dropdown.Option("Masculino"), ft.dropdown.Option("Femenino"), ft.dropdown.Option("Otro")], width=300, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
+        edad_field = ft.TextField(label="Edad", value=str(info["edad"]), width=300, keyboard_type=ft.KeyboardType.NUMBER, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
+    else:
+        nombre_field = ft.TextField(label="Nombre completo", width=300, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
+        altura_field = ft.TextField(label="Altura (pies)", width=300, keyboard_type=ft.KeyboardType.NUMBER, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
+        peso_field = ft.TextField(label="Peso (lbs)", width=300, keyboard_type=ft.KeyboardType.NUMBER, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
+        sexo_field = ft.Dropdown(label="Sexo", options=[ft.dropdown.Option("Masculino"), ft.dropdown.Option("Femenino"), ft.dropdown.Option("Otro")], width=300, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
+        edad_field = ft.TextField(label="Edad", width=300, keyboard_type=ft.KeyboardType.NUMBER, text_size=16, text_style=ft.TextStyle(color="#262626"), label_style=ft.TextStyle(color="#666666"), border_radius=10, border_color="#2E7D32", focused_border_color="#2E7D32", content_padding=10)
+    
+    def guardar_cambios(e, page):
+        nombre = nombre_field.value
+        altura = altura_field.value
+        peso = peso_field.value
+        sexo = sexo_field.value
+        edad = edad_field.value
+        
+        if not all([nombre, altura, peso, sexo, edad]):
+            page.snack_bar = ft.SnackBar(ft.Text("Completa todos los campos", size=16), bgcolor="#D32F2F", duration=3000)
+            page.snack_bar.open = True
+            page.update()
+            return
+        
+        try:
+            altura = float(altura)
+            peso = float(peso)
+            edad = int(edad)
+        except ValueError:
+            page.snack_bar = ft.SnackBar(ft.Text("Altura, peso y edad deben ser números", size=16), bgcolor="#D32F2F", duration=3000)
+            page.snack_bar.open = True
+            page.update()
+            return
+        
+        conn = conectar_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM informacion_personal WHERE user_id = ?", (user_id,))
+        existe = cursor.fetchone()
+        
+        if existe:
+            cursor.execute("UPDATE informacion_personal SET nombre_completo = ?, altura = ?, peso = ?, sexo = ?, edad = ? WHERE user_id = ?", (nombre, altura, peso, sexo, edad, user_id))
+        else:
+            cursor.execute("INSERT INTO informacion_personal (user_id, nombre_completo, altura, peso, sexo, edad) VALUES (?, ?, ?, ?, ?, ?)", (user_id, nombre, altura, peso, sexo, edad))
+        conn.commit()
+        conn.close()
+        
+        page.snack_bar = ft.SnackBar(ft.Text("Información actualizada correctamente", size=16), bgcolor="#2E7D32", duration=3000)
+        page.snack_bar.open = True
+        page.update()
+    
+    return ft.Container(
+        content=ft.Column(
+            [
+                ft.Text("Tu Información Personal", size=24, weight="bold", color="#2E7D32"),
+                nombre_field,
+                altura_field,
+                peso_field,
+                sexo_field,
+                edad_field,
+                ft.ElevatedButton("Actualizar", on_click=lambda e: guardar_cambios(e, page), bgcolor="#2E7D32", color="white", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)), height=50)
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=20
+        ),
+        alignment=ft.alignment.center,
+        expand=True,
+        bgcolor="#F5F5F5",
+        border_radius=15,
+        padding=20,
+    )
+
 def mostrar_pagina_principal(page: ft.Page, username: str, user_id: int):
     page.clean()
     pagina_inicial = crear_pagina_inicial(username)
     pagina_nutricion = crear_pagina_nutricion(user_id)
     pagina_gimnasio = crear_pagina_gimnasio(user_id)
+    pagina_perfil = crear_pagina_perfil(page, user_id)
     contenido_actual = ft.Container(content=pagina_inicial, expand=True)
     
     def cambiar_pagina(index):
@@ -138,6 +223,8 @@ def mostrar_pagina_principal(page: ft.Page, username: str, user_id: int):
             contenido_actual.content = pagina_nutricion
         elif index == 1:
             contenido_actual.content = pagina_gimnasio
+        elif index == 2:
+            contenido_actual.content = pagina_perfil
         page.update()
     
     def volver_pagina_inicial(e):
@@ -169,6 +256,15 @@ def mostrar_pagina_principal(page: ft.Page, username: str, user_id: int):
                             spacing=5
                         ),
                         on_click=lambda e: cambiar_pagina(1),
+                        style=ft.ButtonStyle(color="white")
+                    ),
+                    ft.TextButton(
+                        content=ft.Column(
+                            [ft.Icon(ft.icons.PERSON), ft.Text("Perfil")],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            spacing=5
+                        ),
+                        on_click=lambda e: cambiar_pagina(2),
                         style=ft.ButtonStyle(color="white")
                     )
                 ], alignment=ft.MainAxisAlignment.CENTER, spacing=30)
