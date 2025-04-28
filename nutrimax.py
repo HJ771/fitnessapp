@@ -221,7 +221,7 @@ def crear_pagina_perfil(page: ft.Page, user_id):
             bgcolor=ft.colors.with_opacity(0.1, "#FFFFFF")
         )
         altura_field = ft.TextField(
-            label="Altura (pies)",
+            label="Altura Brewery(pies)",
             width=350,
             keyboard_type=ft.KeyboardType.NUMBER,
             text_size=16,
@@ -273,26 +273,48 @@ def crear_pagina_perfil(page: ft.Page, user_id):
             bgcolor=ft.colors.with_opacity(0.1, "#FFFFFF")
         )
 
-    def guardar_cambios(e, page):
+    error_message = ft.Text("", size=16, color="#D32F2F", font_family="Roboto")
+
+    def guardar_cambios(e):
         nombre = nombre_field.value
         altura = altura_field.value
         peso = peso_field.value
         sexo = sexo_field.value
         edad = edad_field.value
 
-        if not all([nombre, altura, peso, sexo, edad]):
-            page.snack_bar = ft.SnackBar(ft.Text("Completa todos los campos", size=16), bgcolor="#D32F2F", duration=3000)
-            page.snack_bar.open = True
-            page.update()
-            return
+        errores = []
+
+        if not nombre:
+            errores.append("El nombre no puede estar vacío")
+        elif not nombre.replace(" ", "").isalpha():
+            errores.append("El nombre solo debe contener letras y espacios")
 
         try:
             altura = float(altura)
-            peso = float(peso)
-            edad = int(edad)
+            if altura <= 0:
+                errores.append("La altura debe ser un número positivo")
         except ValueError:
-            page.snack_bar = ft.SnackBar(ft.Text("Altura, peso y edad deben ser números", size=16), bgcolor="#D32F2F", duration=3000)
-            page.snack_bar.open = True
+            errores.append("La altura debe ser un número")
+
+        try:
+            peso = float(peso)
+            if peso <= 0:
+                errores.append("El peso debe ser un número positivo")
+        except ValueError:
+            errores.append("El peso debe ser un número")
+
+        if not sexo:
+            errores.append("Selecciona un sexo")
+
+        try:
+            edad = int(edad)
+            if edad <= 0:
+                errores.append("La edad debe ser un número entero positivo")
+        except ValueError:
+            errores.append("La edad debe ser un número entero")
+
+        if errores:
+            error_message.value = "\n".join(errores)
             page.update()
             return
 
@@ -308,8 +330,8 @@ def crear_pagina_perfil(page: ft.Page, user_id):
         conn.commit()
         conn.close()
 
-        page.snack_bar = ft.SnackBar(ft.Text("Información actualizada correctamente", size=16), bgcolor="#2E7D32", duration=3000)
-        page.snack_bar.open = True
+        error_message.value = "Información actualizada correctamente"
+        error_message.color = "#2E7D32"
         page.update()
 
     return ft.Container(
@@ -322,9 +344,10 @@ def crear_pagina_perfil(page: ft.Page, user_id):
                 peso_field,
                 sexo_field,
                 edad_field,
+                error_message,
                 ft.ElevatedButton(
                     "Actualizar Perfil",
-                    on_click=lambda e: guardar_cambios(e, page),
+                    on_click=guardar_cambios,
                     bgcolor="#FFCA28",
                     color="#1B5E20",
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
@@ -491,6 +514,8 @@ def mostrar_pantalla_info_personal(page: ft.Page, username: str, user_id: int):
         bgcolor=ft.colors.with_opacity(0.1, "#FFFFFF")
     )
 
+    error_message = ft.Text("", size=16, color="#D32F2F", font_family="Roboto")
+
     conn = conectar_db()
     cursor = conn.cursor()
     cursor.execute("SELECT nombre_completo, altura, peso, sexo, edad FROM informacion_personal WHERE user_id = ?", (user_id,))
@@ -511,19 +536,39 @@ def mostrar_pantalla_info_personal(page: ft.Page, username: str, user_id: int):
         sexo = sexo_field.value
         edad = edad_field.value
 
-        if not all([nombre, altura, peso, sexo, edad]):
-            page.snack_bar = ft.SnackBar(ft.Text("Completa todos los campos", size=16), bgcolor="#D32F2F", duration=3000)
-            page.snack_bar.open = True
-            page.update()
-            return
+        errores = []
+
+        if not nombre:
+            errores.append("El nombre no puede estar vacío")
+        elif not nombre.replace(" ", "").isalpha():
+            errores.append("El nombre solo debe contener letras y espacios")
 
         try:
             altura = float(altura)
-            peso = float(peso)
-            edad = int(edad)
+            if altura <= 0:
+                errores.append("La altura debe ser un número positivo")
         except ValueError:
-            page.snack_bar = ft.SnackBar(ft.Text("Altura, peso y edad deben ser números", size=16), bgcolor="#D32F2F", duration=3000)
-            page.snack_bar.open = True
+            errores.append("La altura debe ser un número")
+
+        try:
+            peso = float(peso)
+            if peso <= 0:
+                errores.append("El peso debe ser un número positivo")
+        except ValueError:
+            errores.append("El peso debe ser un número")
+
+        if not sexo:
+            errores.append("Selecciona un sexo")
+
+        try:
+            edad = int(edad)
+            if edad <= 0:
+                errores.append("La edad debe ser un número entero positivo")
+        except ValueError:
+            errores.append("La edad debe ser un número entero")
+
+        if errores:
+            error_message.value = "\n".join(errores)
             page.update()
             return
 
@@ -539,8 +584,7 @@ def mostrar_pantalla_info_personal(page: ft.Page, username: str, user_id: int):
                 cursor.execute("INSERT INTO informacion_personal (user_id, nombre_completo, altura, peso, sexo, edad) VALUES (?, ?, ?, ?, ?, ?)", (user_id, nombre, altura, peso, sexo, edad))
             conn.commit()
         except sqlite3.Error as e:
-            page.snack_bar = ft.SnackBar(ft.Text(f"Error al guardar la información: {e}", size=16), bgcolor="#D32F2F", duration=3000)
-            page.snack_bar.open = True
+            error_message.value = f"Error al guardar la información: {e}"
             page.update()
             return
         finally:
@@ -559,6 +603,7 @@ def mostrar_pantalla_info_personal(page: ft.Page, username: str, user_id: int):
                 peso_field,
                 sexo_field,
                 edad_field,
+                error_message,
                 ft.ElevatedButton(
                     "Guardar Información",
                     on_click=guardar_info,
@@ -591,7 +636,6 @@ def main(page: ft.Page):
     page.title = "NutriMax - Login"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    page.bgcolor = "#E0F7FA"
 
     username_field = ft.TextField(
         label="Usuario",
