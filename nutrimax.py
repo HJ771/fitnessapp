@@ -596,28 +596,28 @@ def main(page: ft.Page):
     username_field = ft.TextField(
         label="Usuario",
         width=350,
-        border_radius=12,
-        border_color="#2E7D32",
-        focused_border_color="#2E7D32",
         text_size=16,
+        text_style=ft.TextStyle(color="#FFFFFF"),
+        label_style=ft.TextStyle(color="#E0F7FA"),
+        border_radius=12,
+        border_color="#FFCA28",
+        focused_border_color="#FFCA28",
         content_padding=15,
-        text_style=ft.TextStyle(color="#262626", font_family="Roboto"),
-        label_style=ft.TextStyle(color="#666666", font_family="Roboto"),
-        bgcolor=ft.colors.with_opacity(0.05, "#FFFFFF")
+        bgcolor=ft.colors.with_opacity(0.1, "#FFFFFF")
     )
     password_field = ft.TextField(
         label="Contraseña",
         width=350,
+        text_size=16,
+        text_style=ft.TextStyle(color="#FFFFFF"),
+        label_style=ft.TextStyle(color="#E0F7FA"),
         border_radius=12,
-        border_color="#2E7D32",
-        focused_border_color="#2E7D32",
+        border_color="#FFCA28",
+        focused_border_color="#FFCA28",
         password=True,
         can_reveal_password=True,
-        text_size=16,
         content_padding=15,
-        text_style=ft.TextStyle(color="#262626", font_family="Roboto"),
-        label_style=ft.TextStyle(color="#666666", font_family="Roboto"),
-        bgcolor=ft.colors.with_opacity(0.05, "#FFFFFF")
+        bgcolor=ft.colors.with_opacity(0.1, "#FFFFFF")
     )
     error_message = ft.Text("", size=16, color="#D32F2F", font_family="Roboto")
 
@@ -665,8 +665,8 @@ def main(page: ft.Page):
     main_container = ft.Container(
         content=ft.Column(
             [
-                ft.Text("NutriMax", size=48, weight="bold", color="#2E7D32", font_family="Roboto"),
-                ft.Text("Tu compañero de salud y fitness", size=20, color="#262626", font_family="Roboto"),
+                ft.Text("NutriMax", size=48, weight="bold", color="#FFFFFF", font_family="Roboto"),
+                ft.Text("Tu compañero de salud y fitness", size=20, color="#E0F7FA", font_family="Roboto"),
                 username_field,
                 password_field,
                 error_message,
@@ -675,8 +675,8 @@ def main(page: ft.Page):
                         ft.ElevatedButton(
                             "Iniciar Sesión",
                             on_click=login_click,
-                            bgcolor="#2E7D32",
-                            color="white",
+                            bgcolor="#FFCA28",
+                            color="#1B5E20",
                             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
                             height=50,
                             width=150
@@ -684,8 +684,8 @@ def main(page: ft.Page):
                         ft.ElevatedButton(
                             "Crear Cuenta",
                             on_click=register_click,
-                            bgcolor="#FFA000",
-                            color="white",
+                            bgcolor="#FFCA28",
+                            color="#1B5E20",
                             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
                             height=50,
                             width=150
@@ -700,9 +700,14 @@ def main(page: ft.Page):
         ),
         padding=40,
         border_radius=20,
-        bgcolor="white",
+        bgcolor="#1B5E20",
         width=450,
-        shadow=ft.BoxShadow(spread_radius=2, blur_radius=10, color=ft.colors.with_opacity(0.1, "black"), offset=ft.Offset(0, 4))
+        shadow=ft.BoxShadow(spread_radius=2, blur_radius=10, color=ft.colors.with_opacity(0.1, "black"), offset=ft.Offset(0, 4)),
+        gradient=ft.LinearGradient(
+            begin=ft.Alignment(-1, -1),
+            end=ft.Alignment(1, 1),
+            colors=["#1B5E20", "#2E7D32"]
+        )
     )
 
     page.add(main_container)
