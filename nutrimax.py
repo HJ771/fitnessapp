@@ -870,26 +870,26 @@ def mostrar_pagina_principal(page: ft.Page, username: str, user_id: int):
 
     def cambiar_pagina(index):
         if index == 0:
-            contenido_actual.content = pagina_nutricion
+            contenido_actual.content = crear_pagina_nutricion(user_id)
         elif index == 1:
-            contenido_actual.content = pagina_gimnasio
+            contenido_actual.content = crear_pagina_gimnasio(user_id)
         elif index == 2:
-            contenido_actual.content = pagina_perfil
+            contenido_actual.content = crear_pagina_perfil(page, user_id)
         page.update()
 
-    pagina_nutricion = crear_pagina_nutricion(user_id)
-    pagina_gimnasio = crear_pagina_gimnasio(user_id)
-    pagina_perfil = crear_pagina_perfil(page, user_id)
+    def mostrar_inicial():
+        contenido_actual.content = crear_pagina_inicial(username, user_id, cambiar_pagina)
+        page.update()
 
-    pagina_inicial = crear_pagina_inicial(username, user_id, cambiar_pagina)
-    contenido_actual = ft.Container(content=pagina_inicial, expand=True)
+    contenido_actual = ft.Container(expand=True)
+    mostrar_inicial()
 
     appbar = ft.AppBar(
         title=ft.Container(
             content=ft.Column([
                 ft.TextButton(
                     content=ft.Text("NutriMax", size=24, weight="bold", color="white"),
-                    on_click=lambda e: (setattr(contenido_actual, 'content', pagina_inicial), page.update()),
+                    on_click=lambda e: mostrar_inicial(),
                     style=ft.ButtonStyle(color="white")
                 ),
                 ft.Row([
@@ -941,7 +941,7 @@ def mostrar_pagina_principal(page: ft.Page, username: str, user_id: int):
 
     page.appbar = appbar
     page.bgcolor = "#E0F2E9"
-    page.add(ft.Container(contenido_actual, expand=True))
+    page.add(contenido_actual)
     page.update()
 
 def mostrar_pantalla_info_personal(page: ft.Page, username: str, user_id: int):
